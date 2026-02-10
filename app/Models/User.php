@@ -1,0 +1,58 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+
+class User extends Authenticatable
+{
+    use HasApiTokens, HasFactory, Notifiable;
+
+    protected $fillable = ['first_name', 'last_name', 'email', 'password', 'is_admin'];
+    protected $hidden = ['password', 'remember_token'];
+
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+            'is_admin' => 'boolean',
+        ];
+    }
+
+    public function getNameAttribute(): string
+    {
+        return "{$this->first_name} {$this->last_name}";
+    }
+
+    public function orders() { return $this->hasMany(Order::class); }
+    public function cartItems() { return $this->hasMany(CartItem::class); }
+    public function comments() { return $this->hasMany(Comment::class); }
+
+    public function isAdmin(): bool { return $this->is_admin; }
+
+    public function hasPurchased(Product $product): bool
+    {
+        return $this->orders()
+            ->where('status', 'completed')
+            ->whereHas('items', fn($q) => $q->where('product_id', $product->id))
+            ->exists();
+    }
+
+    public function purchasedProductIds(): array
+    {
+        return $this->orders()
+            ->where('status', 'completed')
+            ->with('items:order_id,product_id')
+            ->get()
+            ->pluck('items')
+            ->flatten()
+            ->pluck('product_id')
+            ->unique()
+            ->values()
+            ->all();
+    }
+}
