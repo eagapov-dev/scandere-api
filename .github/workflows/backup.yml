@@ -1,0 +1,52 @@
+name: Database Backup
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # Daily at 2 AM UTC
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+
+    name: Backup Database
+
+    steps:
+    - name: Setup SSH
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        SSH_HOST: ${{ secrets.SSH_HOST }}
+        SSH_USER: ${{ secrets.SSH_USER }}
+      run: |
+        mkdir -p ~/.ssh
+        echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+        ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts
+
+    - name: Run backup script
+      env:
+        SSH_HOST: ${{ secrets.SSH_HOST }}
+        SSH_USER: ${{ secrets.SSH_USER }}
+      run: |
+        ssh -i ~/.ssh/deploy_key $SSH_USER@$SSH_HOST << 'ENDSSH'
+          cd /var/www/scandere-api
+          sudo ./backup.sh
+          echo "Backup completed successfully!"
+        ENDSSH
+
+    - name: Verify backup
+      env:
+        SSH_HOST: ${{ secrets.SSH_HOST }}
+        SSH_USER: ${{ secrets.SSH_USER }}
+      run: |
+        ssh -i ~/.ssh/deploy_key $SSH_USER@$SSH_HOST << 'ENDSSH'
+          BACKUP_DIR="/root/backups/scandere"
+          LATEST_BACKUP=$(ls -t $BACKUP_DIR/db_*.sql.gz | head -1)
+          if [ -f "$LATEST_BACKUP" ]; then
+            SIZE=$(du -h "$LATEST_BACKUP" | cut -f1)
+            echo "✅ Latest backup: $LATEST_BACKUP ($SIZE)"
+          else
+            echo "❌ No backup found!"
+            exit 1
+          fi
+        ENDSSH

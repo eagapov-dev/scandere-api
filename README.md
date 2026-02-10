@@ -2,6 +2,12 @@
 
 Laravel 11 API for e-commerce store with Stripe integration and Sanctum authentication.
 
+![Tests](https://github.com/eagapov-dev/scandere-api/workflows/Tests/badge.svg)
+![Code Style](https://github.com/eagapov-dev/scandere-api/workflows/Code%20Style/badge.svg)
+![Security](https://github.com/eagapov-dev/scandere-api/workflows/Security%20Checks/badge.svg)
+![PHP Version](https://img.shields.io/badge/PHP-8.2%20%7C%208.3-blue)
+![Laravel](https://img.shields.io/badge/Laravel-11-red)
+
 ## 🚀 Quick Start (Production)
 
 ### 1️⃣ Upload script to server
@@ -96,6 +102,25 @@ php artisan test --coverage
 - ✅ Payment Service (calculations, validation)
 
 See [TESTING.md](TESTING.md) for detailed testing guide.
+
+## 🚀 CI/CD
+
+### GitHub Actions Workflows
+
+- **Tests** - Automated testing on PHP 8.2 & 8.3
+- **Code Style** - Laravel Pint style checks
+- **Security** - Dependency vulnerability scanning
+- **Deploy** - Automatic deployment to production
+- **Backup** - Daily database backups
+
+### Automatic Deployment
+
+Push to `main` branch triggers automatic deployment:
+```
+Push → Tests → Deploy → Production ✅
+```
+
+See [CI_CD.md](CI_CD.md) for detailed CI/CD documentation.
 
 ## 📦 Project Structure
 
@@ -249,6 +274,8 @@ php artisan tinker
 - `deploy-setup.sh` - Initial server setup (Nginx, PHP, MariaDB)
 - `deploy-app.sh` - Laravel application deployment
 - `update.sh` - Quick code update
+- `backup.sh` - Database backup
+- `setup-cron.sh` - Automated tasks setup
 
 ## 🔒 Security
 
