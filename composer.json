@@ -29,6 +29,13 @@
             "@php artisan package:discover --ansi"
         ]
     },
+    "config": {
+        "platform": {
+            "php": "8.3.99"
+        },
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
     "minimum-stability": "stable",
     "prefer-stable": true
 }
