@@ -70,6 +70,33 @@ php artisan serve
 
 API will be available at `http://localhost:8000`
 
+## 🧪 Testing
+
+### Run Tests
+```bash
+# All tests
+php artisan test
+
+# Feature tests only
+php artisan test --testsuite=Feature
+
+# Unit tests only
+php artisan test --testsuite=Unit
+
+# With coverage
+php artisan test --coverage
+```
+
+### Test Coverage
+- ✅ Authentication (register, login, logout)
+- ✅ Products (CRUD, filtering, featured)
+- ✅ Shopping Cart (add, remove, clear)
+- ✅ Orders (checkout, admin management)
+- ✅ Comments (create, approve, delete)
+- ✅ Payment Service (calculations, validation)
+
+See [TESTING.md](TESTING.md) for detailed testing guide.
+
 ## 📦 Project Structure
 
 ```

@@ -89,4 +89,21 @@ class PaymentService
             Order::where('id', $paymentIntent->metadata->order_id)->update(['status' => 'failed']);
         }
     }
+
+    public function calculateTotal(array $items): float
+    {
+        return array_reduce($items, function ($carry, $item) {
+            return $carry + ($item['price'] * $item['quantity']);
+        }, 0);
+    }
+
+    public function formatAmountForStripe(float $amount): int
+    {
+        return (int) ($amount * 100);
+    }
+
+    public function isProductAvailable($product): bool
+    {
+        return $product->is_active ?? false;
+    }
 }
