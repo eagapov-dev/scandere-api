@@ -1,12 +1,13 @@
 name: Deploy to Production
 
 on:
-  push:
-    branches: [ main ]
-    paths-ignore:
-      - '**.md'
-      - '.github/**'
-  workflow_dispatch:
+  # Automatic deployment disabled - uncomment when SSH keys are configured
+  # push:
+  #   branches: [ main ]
+  #   paths-ignore:
+  #     - '**.md'
+  #     - '.github/**'
+  workflow_dispatch:  # Manual deployment only
 
 jobs:
   deploy:
