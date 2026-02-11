@@ -101,6 +101,12 @@ class DatabaseSeeder extends Seeder
         $this->createContactMessages();
         $this->createComments([$p1, $p2, $p3]);
         $this->createOrders([$p1, $p2, $p3]);
+
+        $this->call([
+            HomeContentSeeder::class,
+            NavigationLinksSeeder::class,
+            SocialLinksSeeder::class,
+        ]);
     }
 
     private function createTestUsers(): void
@@ -259,17 +265,66 @@ class DatabaseSeeder extends Seeder
             'created_at' => now()->subHours(3),
         ]);
 
-        // Comment with admin reply
-        $comment = Comment::create([
+        // Q&A: Published comments with answers, shown on homepage
+        Comment::create([
             'user_id' => $users[0]->id,
             'product_id' => $products[0]->id,
             'body' => 'Is there a version for online businesses?',
+            'answer' => 'Yes! The checklist includes sections applicable to both online and brick-and-mortar businesses. Most items work for any business type.',
             'status' => 'published',
+            'show_on_homepage' => true,
             'created_at' => now()->subDays(15),
         ]);
 
-        $comment->update([
-            'answer' => 'Yes! The checklist includes sections applicable to both online and brick-and-mortar businesses. Most items work for any business type.',
+        Comment::create([
+            'user_id' => $users[1]->id,
+            'product_id' => $products[1]->id,
+            'body' => 'Does the financial template work with Google Sheets?',
+            'answer' => 'The template is optimized for Excel, but you can import it into Google Sheets. Some advanced formulas may need minor adjustments.',
+            'status' => 'published',
+            'show_on_homepage' => true,
+            'created_at' => now()->subDays(12),
+        ]);
+
+        Comment::create([
+            'user_id' => $users[2]->id,
+            'product_id' => $products[2]->id,
+            'body' => 'How often is the marketing guide updated?',
+            'answer' => 'We update the guide quarterly to reflect the latest digital marketing trends and algorithm changes. All updates are free for existing buyers.',
+            'status' => 'published',
+            'show_on_homepage' => true,
+            'created_at' => now()->subDays(8),
+        ]);
+
+        Comment::create([
+            'user_id' => $users[0]->id,
+            'product_id' => $products[0]->id,
+            'body' => 'Can I use the checklist for an LLC and sole proprietorship?',
+            'answer' => 'Absolutely! The checklist covers requirements for all common business structures including LLC, sole proprietorship, partnership, and S-Corp.',
+            'status' => 'published',
+            'show_on_homepage' => true,
+            'created_at' => now()->subDays(6),
+        ]);
+
+        Comment::create([
+            'user_id' => $users[2]->id,
+            'product_id' => $products[1]->id,
+            'body' => 'Is there customer support if I get stuck with the template?',
+            'answer' => 'Of course! Email us anytime at support@scandereai.store and we will help you get set up. We typically respond within 24 hours.',
+            'status' => 'published',
+            'show_on_homepage' => true,
+            'created_at' => now()->subDays(4),
+        ]);
+
+        // General Q&A (no product)
+        Comment::create([
+            'user_id' => $users[1]->id,
+            'product_id' => null,
+            'body' => 'Do you offer refunds if a product does not meet my expectations?',
+            'answer' => 'Yes, we offer a 30-day money-back guarantee on all products. If you are not satisfied, just contact us and we will process your refund.',
+            'status' => 'published',
+            'show_on_homepage' => true,
+            'created_at' => now()->subDays(20),
         ]);
     }
 
