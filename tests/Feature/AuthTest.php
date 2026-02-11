@@ -15,9 +15,9 @@ class AuthTest extends TestCase
         $response = $this->postJson('/api/auth/register', [
             'first_name' => 'Test',
             'last_name' => 'User',
-            'email' => 'test@example.com',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
+            'email' => 'test@gmail.com',
+            'password' => 'Password123',
+            'password_confirmation' => 'Password123',
         ]);
 
         $response->assertStatus(201)
@@ -27,7 +27,7 @@ class AuthTest extends TestCase
             ]);
 
         $this->assertDatabaseHas('users', [
-            'email' => 'test@example.com',
+            'email' => 'test@gmail.com',
         ]);
     }
 
@@ -47,12 +47,12 @@ class AuthTest extends TestCase
     public function test_user_can_login(): void
     {
         $user = User::factory()->create([
-            'email' => 'test@example.com',
+            'email' => 'test@gmail.com',
             'password' => bcrypt('password123'),
         ]);
 
         $response = $this->postJson('/api/auth/login', [
-            'email' => 'test@example.com',
+            'email' => 'test@gmail.com',
             'password' => 'password123',
         ]);
 
@@ -66,12 +66,12 @@ class AuthTest extends TestCase
     public function test_user_cannot_login_with_invalid_credentials(): void
     {
         User::factory()->create([
-            'email' => 'test@example.com',
+            'email' => 'test@gmail.com',
             'password' => bcrypt('password123'),
         ]);
 
         $response = $this->postJson('/api/auth/login', [
-            'email' => 'test@example.com',
+            'email' => 'test@gmail.com',
             'password' => 'wrong-password',
         ]);
 

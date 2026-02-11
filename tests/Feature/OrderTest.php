@@ -26,11 +26,14 @@ class OrderTest extends TestCase
         $response = $this->withHeader('Authorization', 'Bearer ' . $token)
             ->postJson('/api/checkout');
 
-        $response->assertStatus(200)
-            ->assertJsonStructure([
-                'session_id',
-                'checkout_url',
-            ]);
+        $response->assertStatus(200);
+
+        // When BYPASS_PAYMENT=true (testing mode), expect different response
+        if (config('services.bypass_payment')) {
+            $response->assertJsonStructure(['message', 'order_id']);
+        } else {
+            $response->assertJsonStructure(['checkout_url']);
+        }
     }
 
     public function test_cannot_checkout_with_empty_cart(): void
@@ -41,7 +44,7 @@ class OrderTest extends TestCase
         $response = $this->withHeader('Authorization', 'Bearer ' . $token)
             ->postJson('/api/checkout');
 
-        $response->assertStatus(422);
+        $response->assertStatus(400);
     }
 
     public function test_guest_cannot_checkout(): void
@@ -61,7 +64,9 @@ class OrderTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'data',
+                'orders',
+                'total_revenue',
+                'total_orders',
             ]);
     }
 

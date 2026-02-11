@@ -22,7 +22,9 @@ class CartTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'items',
-                'total',
+                'subtotal',
+                'bundle',
+                'bundle_savings',
             ]);
     }
 

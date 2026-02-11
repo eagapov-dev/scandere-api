@@ -17,7 +17,7 @@ class CommentTest extends TestCase
         $product = Product::factory()->create();
         Comment::factory()->count(3)->create([
             'product_id' => $product->id,
-            'is_approved' => true,
+            'status' => 'published',
         ]);
 
         $response = $this->getJson("/api/products/{$product->id}/comments");
@@ -31,11 +31,11 @@ class CommentTest extends TestCase
         $product = Product::factory()->create();
         Comment::factory()->count(2)->create([
             'product_id' => $product->id,
-            'is_approved' => true,
+            'status' => 'published',
         ]);
         Comment::factory()->create([
             'product_id' => $product->id,
-            'is_approved' => false,
+            'status' => 'draft',
         ]);
 
         $response = $this->getJson("/api/products/{$product->id}/comments");
@@ -78,7 +78,7 @@ class CommentTest extends TestCase
     public function test_admin_can_approve_comment(): void
     {
         $admin = User::factory()->admin()->create();
-        $comment = Comment::factory()->create(['is_approved' => false]);
+        $comment = Comment::factory()->create(['status' => 'draft']);
         $token = $admin->createToken('test-token')->plainTextToken;
 
         $response = $this->withHeader('Authorization', 'Bearer ' . $token)
@@ -88,7 +88,7 @@ class CommentTest extends TestCase
 
         $this->assertDatabaseHas('comments', [
             'id' => $comment->id,
-            'is_approved' => true,
+            'status' => 'published',
         ]);
     }
 
@@ -101,7 +101,7 @@ class CommentTest extends TestCase
         $response = $this->withHeader('Authorization', 'Bearer ' . $token)
             ->deleteJson("/api/admin/comments/{$comment->id}");
 
-        $response->assertStatus(204);
+        $response->assertStatus(200);
 
         $this->assertDatabaseMissing('comments', [
             'id' => $comment->id,

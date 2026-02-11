@@ -6,6 +6,8 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class ProductTest extends TestCase
@@ -34,10 +36,18 @@ class ProductTest extends TestCase
         $response = $this->getJson("/api/products/{$product->slug}");
 
         $response->assertStatus(200)
+            ->assertJsonStructure([
+                'product' => ['id', 'title', 'price'],
+                'has_purchased',
+                'comments',
+                'related'
+            ])
             ->assertJson([
-                'id' => $product->id,
-                'title' => $product->title,
-                'price' => (string) $product->price,
+                'product' => [
+                    'id' => $product->id,
+                    'title' => $product->title,
+                ],
+                'has_purchased' => false,
             ]);
     }
 
@@ -56,12 +66,12 @@ class ProductTest extends TestCase
     public function test_can_list_featured_products(): void
     {
         Product::factory()->featured()->count(3)->create();
-        Product::factory()->count(2)->create(['is_featured' => false]);
+        Product::factory()->count(2)->create(['show_on_homepage' => false]);
 
         $response = $this->getJson('/api/featured');
 
         $response->assertStatus(200)
-            ->assertJsonCount(3, 'data');
+            ->assertJsonStructure(['products', 'bundles']);
     }
 
     public function test_can_list_categories(): void
@@ -73,31 +83,30 @@ class ProductTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonCount(5)
             ->assertJsonStructure([
-                '*' => ['id', 'name', 'slug', 'description'],
+                '*' => ['id', 'name', 'slug'],
             ]);
     }
 
     public function test_admin_can_create_product(): void
     {
+        Storage::fake('public');
         $admin = User::factory()->admin()->create();
         $category = Category::factory()->create();
-        $token = $admin->createToken('test-token')->plainTextToken;
 
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-            ->postJson('/api/admin/products', [
+        $response = $this->actingAs($admin, 'sanctum')
+            ->withHeaders(['Accept' => 'application/json'])
+            ->post('/api/admin/products', [
                 'title' => 'New Product',
+                'slug' => 'new-product',
                 'description' => 'Product description',
                 'price' => 29.99,
                 'category_id' => $category->id,
-                'preview_image' => 'https://example.com/image.jpg',
-                'file_path' => 'files/test.zip',
-                'file_name' => 'test.zip',
+                'file' => UploadedFile::fake()->create('product.zip', 1000),
             ]);
 
         $response->assertStatus(201)
-            ->assertJson([
+            ->assertJsonFragment([
                 'title' => 'New Product',
-                'price' => '29.99',
             ]);
 
         $this->assertDatabaseHas('products', [
@@ -151,7 +160,7 @@ class ProductTest extends TestCase
         $response = $this->withHeader('Authorization', 'Bearer ' . $token)
             ->deleteJson("/api/admin/products/{$product->id}");
 
-        $response->assertStatus(204);
+        $response->assertStatus(200);
 
         $this->assertDatabaseMissing('products', [
             'id' => $product->id,

@@ -23,7 +23,7 @@ class ProductFactory extends Factory
             'price' => fake()->randomFloat(2, 9.99, 99.99),
             'category_id' => Category::factory(),
             'is_free' => false,
-            'is_featured' => fake()->boolean(20),
+            'show_on_homepage' => fake()->boolean(20),
             'is_active' => true,
             'file_path' => 'files/' . Str::random(10) . '.zip',
             'file_name' => Str::random(10) . '.zip',
@@ -38,7 +38,7 @@ class ProductFactory extends Factory
     public function featured(): static
     {
         return $this->state(fn (array $attributes) => [
-            'is_featured' => true,
+            'show_on_homepage' => true,
         ]);
     }
 

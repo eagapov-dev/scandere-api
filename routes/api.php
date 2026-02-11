@@ -1,8 +1,8 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\{ProductController, CartController, PaymentController, CommentController, ContactController, SubscriberController};
-use App\Http\Controllers\Admin\{DashboardController as AdminDash, ProductController as AdminProduct, SubscriberController as AdminSub, OrderController as AdminOrder, CommentController as AdminComment, ContactController as AdminContact};
+use App\Http\Controllers\{ProductController, CartController, PaymentController, CommentController, ContactController, SubscriberController, FaqController, HomeController};
+use App\Http\Controllers\Admin\{DashboardController as AdminDash, ProductController as AdminProduct, SubscriberController as AdminSub, OrderController as AdminOrder, CommentController as AdminComment, ContactController as AdminContact, CategoryController as AdminCategory, FaqController as AdminFaq, FaqCategoryController as AdminFaqCategory, HeroSlideController, HomeFeatureController, HomeStatController, HomeShowcaseController, SocialLinkController, NavigationLinkController, NewsletterCampaignController};
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,9 +18,12 @@ Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{slug}', [ProductController::class, 'show']);
 Route::get('/featured', [ProductController::class, 'featured']);
 Route::get('/categories', [ProductController::class, 'categories']);
+Route::get('/faqs', [FaqController::class, 'index']);
+Route::get('/home-content', [HomeController::class, 'content']);
 
 // Public comments (read only)
 Route::get('/products/{product}/comments', [CommentController::class, 'index']);
+Route::get('/recent-qa', [CommentController::class, 'recentQA']);
 
 /*
 |--------------------------------------------------------------------------
@@ -59,6 +62,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Comments (post)
     Route::post('/products/{product}/comments', [CommentController::class, 'store']);
+    Route::post('/comments/general', [CommentController::class, 'storeGeneral']);
 
     /*
     |--------------------------------------------------------------------------
@@ -68,14 +72,27 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware(\App\Http\Middleware\IsAdmin::class)->prefix('admin')->group(function () {
         Route::get('/stats', [AdminDash::class, 'stats']);
         Route::apiResource('products', AdminProduct::class);
+        Route::apiResource('bundles', \App\Http\Controllers\Admin\BundleController::class);
+        Route::apiResource('categories', AdminCategory::class);
+        Route::apiResource('faqs', AdminFaq::class);
+        Route::apiResource('faq-categories', AdminFaqCategory::class);
+        Route::apiResource('hero-slides', HeroSlideController::class);
+        Route::apiResource('home-features', HomeFeatureController::class);
+        Route::apiResource('home-stats', HomeStatController::class);
+        Route::apiResource('home-showcases', HomeShowcaseController::class);
+        Route::apiResource('social-links', SocialLinkController::class);
+        Route::apiResource('navigation-links', NavigationLinkController::class);
         Route::get('/subscribers', [AdminSub::class, 'index']);
         Route::get('/subscribers/export', [AdminSub::class, 'export']);
         Route::get('/orders', [AdminOrder::class, 'index']);
         Route::get('/comments', [AdminComment::class, 'index']);
+        Route::put('/comments/{comment}', [AdminComment::class, 'update']);
         Route::patch('/comments/{comment}/approve', [AdminComment::class, 'approve']);
         Route::delete('/comments/{comment}', [AdminComment::class, 'destroy']);
         Route::get('/messages', [AdminContact::class, 'index']);
         Route::patch('/messages/{message}/read', [AdminContact::class, 'markRead']);
+        Route::post('/newsletter/send', [NewsletterCampaignController::class, 'send']);
+        Route::get('/newsletter/stats', [NewsletterCampaignController::class, 'stats']);
     });
 });
 

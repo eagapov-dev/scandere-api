@@ -1,0 +1,2937 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Scandere AI Store API",
+        "description": "REST API for digital products e-commerce platform. Sell and manage digital documents (PDFs, Excel, Word) with secure downloads, payments via Stripe, and comprehensive admin panel.",
+        "contact": {
+            "name": "Scandere Support",
+            "email": "team@scandere.info"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "https://api.scandereai.store",
+            "description": "Production API Server"
+        },
+        {
+            "url": "http://localhost:8000",
+            "description": "Local Development Server"
+        }
+    ],
+    "paths": {
+        "/api/admin/comments": {
+            "get": {
+                "tags": [
+                    "Admin - Comments"
+                ],
+                "summary": "List all comments (admin)",
+                "description": "Get paginated list of all comments with user and product information for moderation. Requires admin authentication.",
+                "operationId": "6fba1a48da65e1dd18e7a6df363c642c",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated comments list",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "body": {
+                                                        "type": "string"
+                                                    },
+                                                    "is_approved": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "user": {
+                                                        "type": "object"
+                                                    },
+                                                    "product": {
+                                                        "type": "object"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "current_page": {
+                                            "type": "integer"
+                                        },
+                                        "per_page": {
+                                            "type": "integer",
+                                            "example": 30
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden (not admin)"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/comments/{id}/approve": {
+            "patch": {
+                "tags": [
+                    "Admin - Comments"
+                ],
+                "summary": "Approve comment (admin)",
+                "description": "Approve a pending comment to make it visible publicly. Requires admin authentication.",
+                "operationId": "6eb82be0f95820ea9ac5a971da6f70e2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Comment ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Comment approved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Approved."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden (not admin)"
+                    },
+                    "404": {
+                        "description": "Comment not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/comments/{id}": {
+            "delete": {
+                "tags": [
+                    "Admin - Comments"
+                ],
+                "summary": "Delete comment (admin)",
+                "description": "Permanently delete a comment. Requires admin authentication.",
+                "operationId": "095e0471d8ce40513b406014bfbcf383",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Comment ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Comment deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Deleted."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden (not admin)"
+                    },
+                    "404": {
+                        "description": "Comment not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/messages": {
+            "get": {
+                "tags": [
+                    "Admin - Messages"
+                ],
+                "summary": "List all contact messages (admin)",
+                "description": "Get paginated list of all contact form submissions. Requires admin authentication.",
+                "operationId": "5e382b38c49c3ded62fe315c5f237cb9",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated messages list",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "first_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "last_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "email": {
+                                                        "type": "string"
+                                                    },
+                                                    "message": {
+                                                        "type": "string"
+                                                    },
+                                                    "is_read": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "current_page": {
+                                            "type": "integer"
+                                        },
+                                        "per_page": {
+                                            "type": "integer",
+                                            "example": 30
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden (not admin)"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/messages/{id}/read": {
+            "patch": {
+                "tags": [
+                    "Admin - Messages"
+                ],
+                "summary": "Mark message as read (admin)",
+                "description": "Mark a contact message as read. Requires admin authentication.",
+                "operationId": "b2ceb4b131b5c9ccbbf969d61913b6c5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Message ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Message marked as read",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Marked as read."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden (not admin)"
+                    },
+                    "404": {
+                        "description": "Message not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/stats": {
+            "get": {
+                "tags": [
+                    "Admin - Dashboard"
+                ],
+                "summary": "Get admin dashboard statistics",
+                "description": "Get comprehensive statistics for admin dashboard including users, subscribers, products, orders, revenue, and recent activity. Requires admin authentication.",
+                "operationId": "deeeec8019a30ad6f7ea8c7327d49480",
+                "responses": {
+                    "200": {
+                        "description": "Dashboard statistics",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "total_users": {
+                                            "description": "Total registered users",
+                                            "type": "integer",
+                                            "example": 150
+                                        },
+                                        "total_subscribers": {
+                                            "description": "Total active newsletter subscribers",
+                                            "type": "integer",
+                                            "example": 320
+                                        },
+                                        "total_products": {
+                                            "description": "Total products",
+                                            "type": "integer",
+                                            "example": 3
+                                        },
+                                        "total_orders": {
+                                            "description": "Total completed orders",
+                                            "type": "integer",
+                                            "example": 85
+                                        },
+                                        "total_revenue": {
+                                            "description": "Total revenue from completed orders",
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 2123.15
+                                        },
+                                        "unread_messages": {
+                                            "description": "Number of unread contact messages",
+                                            "type": "integer",
+                                            "example": 7
+                                        },
+                                        "recent_orders": {
+                                            "description": "10 most recent completed orders",
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "total": {
+                                                        "type": "number"
+                                                    },
+                                                    "status": {
+                                                        "type": "string",
+                                                        "example": "completed"
+                                                    },
+                                                    "paid_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    },
+                                                    "user": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer"
+                                                            },
+                                                            "first_name": {
+                                                                "type": "string"
+                                                            },
+                                                            "last_name": {
+                                                                "type": "string"
+                                                            },
+                                                            "email": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "recent_subscribers": {
+                                            "description": "10 most recent subscribers",
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "email": {
+                                                        "type": "string"
+                                                    },
+                                                    "first_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "source": {
+                                                        "type": "string",
+                                                        "example": "newsletter"
+                                                    },
+                                                    "subscribed_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden (not admin)"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/orders": {
+            "get": {
+                "tags": [
+                    "Admin - Orders"
+                ],
+                "summary": "List all orders (admin)",
+                "description": "Get paginated list of all orders with user and product information, plus total revenue and order count. Requires admin authentication.",
+                "operationId": "f954f3dfa0d14a0dbea3336954f7bace",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Orders list with statistics",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "orders": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "current_page": {
+                                                    "type": "integer"
+                                                },
+                                                "last_page": {
+                                                    "type": "integer"
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 30
+                                                },
+                                                "total": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "total_revenue": {
+                                            "description": "Total revenue from completed orders",
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 12345.67
+                                        },
+                                        "total_orders": {
+                                            "description": "Total number of completed orders",
+                                            "type": "integer",
+                                            "example": 248
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden (not admin)"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/products": {
+            "get": {
+                "tags": [
+                    "Admin - Products"
+                ],
+                "summary": "List all products (admin)",
+                "description": "Get paginated list of all products with category information. Requires admin authentication.",
+                "operationId": "b34ae277f0fefc0a74d9869d25c1fa18",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated products list",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "current_page": {
+                                            "type": "integer"
+                                        },
+                                        "last_page": {
+                                            "type": "integer"
+                                        },
+                                        "per_page": {
+                                            "type": "integer",
+                                            "example": 20
+                                        },
+                                        "total": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden (not admin)"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin - Products"
+                ],
+                "summary": "Create new product (admin)",
+                "description": "Create a new product with file upload. Requires admin authentication. Accepts multipart/form-data for file uploads.",
+                "operationId": "ff11d12615a68edd8d75eb6fe4d5f885",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "price",
+                                    "file"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "New Product Template"
+                                    },
+                                    "category_id": {
+                                        "description": "Category ID (nullable)",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "short_description": {
+                                        "type": "string",
+                                        "maxLength": 500,
+                                        "example": "Brief product description"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Full product description with details"
+                                    },
+                                    "price": {
+                                        "description": "Product price",
+                                        "type": "number",
+                                        "minimum": 0,
+                                        "example": 9.99
+                                    },
+                                    "is_free": {
+                                        "description": "Is this a free product",
+                                        "type": "boolean",
+                                        "example": false
+                                    },
+                                    "is_active": {
+                                        "description": "Is product active (default: true)",
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "is_featured": {
+                                        "description": "Feature this product",
+                                        "type": "boolean",
+                                        "example": false
+                                    },
+                                    "file": {
+                                        "description": "Product file (PDF, XLSX, DOCX, etc.) - max 50MB",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "preview_image": {
+                                        "description": "Preview image (optional) - max 2MB",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Product created successfully"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden (not admin)"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/products/{id}": {
+            "get": {
+                "tags": [
+                    "Admin - Products"
+                ],
+                "summary": "Get product details (admin)",
+                "description": "Get detailed product information with category. Requires admin authentication.",
+                "operationId": "062dc33bdb34eef6fb8eed7af62254c6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Product ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Product details"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden (not admin)"
+                    },
+                    "404": {
+                        "description": "Product not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Admin - Products"
+                ],
+                "summary": "Update product (admin)",
+                "description": "Update existing product. Optionally upload new file to replace existing. Requires admin authentication.",
+                "operationId": "1234c087b21bd1df187ed757f67000ea",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Product ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "price"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "category_id": {
+                                        "type": "integer"
+                                    },
+                                    "short_description": {
+                                        "type": "string",
+                                        "maxLength": 500
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "price": {
+                                        "type": "number",
+                                        "minimum": 0
+                                    },
+                                    "is_free": {
+                                        "type": "boolean"
+                                    },
+                                    "is_active": {
+                                        "type": "boolean"
+                                    },
+                                    "is_featured": {
+                                        "type": "boolean"
+                                    },
+                                    "file": {
+                                        "description": "Optional: Replace product file (max 50MB)",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Product updated successfully"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden (not admin)"
+                    },
+                    "404": {
+                        "description": "Product not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Admin - Products"
+                ],
+                "summary": "Delete product (admin)",
+                "description": "Permanently delete product and associated file. Requires admin authentication.",
+                "operationId": "07ca3329005fedce634d7afd90df29f5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Product ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Product deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Deleted."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden (not admin)"
+                    },
+                    "404": {
+                        "description": "Product not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/subscribers": {
+            "get": {
+                "tags": [
+                    "Admin - Subscribers"
+                ],
+                "summary": "List all subscribers (admin)",
+                "description": "Get paginated list of newsletter subscribers with statistics (active vs unsubscribed counts). Requires admin authentication.",
+                "operationId": "67870553c3cf3874c253a4cb27ef5831",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Subscribers list with statistics",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "subscribers": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "current_page": {
+                                                    "type": "integer"
+                                                },
+                                                "last_page": {
+                                                    "type": "integer"
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 30
+                                                },
+                                                "total": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "total_active": {
+                                            "description": "Number of active subscribers",
+                                            "type": "integer",
+                                            "example": 320
+                                        },
+                                        "total_unsubscribed": {
+                                            "description": "Number of unsubscribed users",
+                                            "type": "integer",
+                                            "example": 45
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden (not admin)"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/subscribers/export": {
+            "get": {
+                "tags": [
+                    "Admin - Subscribers"
+                ],
+                "summary": "Export subscribers to CSV (admin)",
+                "description": "Download all active subscribers as CSV file. Includes email, first name, last name, source, and subscription date. Requires admin authentication.",
+                "operationId": "ff2b9b5de3b6d5d60d9e088d1d6d2209",
+                "responses": {
+                    "200": {
+                        "description": "CSV file download",
+                        "headers": {
+                            "Content-Disposition": {
+                                "description": "Filename for download",
+                                "schema": {
+                                    "type": "string",
+                                    "example": "attachment; filename=subscribers-2024-01-15.csv"
+                                }
+                            }
+                        },
+                        "content": {
+                            "text/csv": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary",
+                                    "example": "Email,First Name,Last Name,Source,Subscribed At\\njohn@example.com,John,Doe,newsletter,2024-01-15 10:30:00"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden (not admin)"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/register": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Register a new user",
+                "description": "Create a new user account and return authentication token",
+                "operationId": "da8643013c2941f5ed7f8a9c9b4a7f7a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "first_name",
+                                    "last_name",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "first_name": {
+                                        "description": "User's first name",
+                                        "type": "string",
+                                        "example": "John"
+                                    },
+                                    "last_name": {
+                                        "description": "User's last name",
+                                        "type": "string",
+                                        "example": "Doe"
+                                    },
+                                    "email": {
+                                        "description": "Valid email address",
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john.doe@example.com"
+                                    },
+                                    "password": {
+                                        "description": "Password (min 8 chars, mixed case, numbers)",
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "SecurePass123!"
+                                    },
+                                    "password_confirmation": {
+                                        "description": "Password confirmation (must match password)",
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "SecurePass123!"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User registered successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "first_name": {
+                                                    "type": "string",
+                                                    "example": "John"
+                                                },
+                                                "last_name": {
+                                                    "type": "string",
+                                                    "example": "Doe"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "john.doe@example.com"
+                                                },
+                                                "is_admin": {
+                                                    "type": "boolean",
+                                                    "example": false
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "John Doe"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "token": {
+                                            "description": "Sanctum authentication token",
+                                            "type": "string",
+                                            "example": "1|aBcDeFgHiJkLmNoPqRsTuVwXyZ1234567890"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The email has already been taken."
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Login user",
+                "description": "Authenticate user and return access token",
+                "operationId": "535ffeda4b78916efd658b2844ea897a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john.doe@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "SecurePass123!"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "first_name": {
+                                                    "type": "string",
+                                                    "example": "John"
+                                                },
+                                                "last_name": {
+                                                    "type": "string",
+                                                    "example": "Doe"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "john.doe@example.com"
+                                                },
+                                                "is_admin": {
+                                                    "type": "boolean",
+                                                    "example": false
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "John Doe"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|aBcDeFgHiJkLmNoPqRsTuVwXyZ1234567890"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid credentials",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid credentials."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Logout user",
+                "description": "Revoke current access token and logout user",
+                "operationId": "46f8a14c8083abb69eed72768aa08629",
+                "responses": {
+                    "200": {
+                        "description": "Logout successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logged out."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/user": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Get current user",
+                "description": "Get authenticated user information",
+                "operationId": "9f8cd54a54859b28ce443278deac86e0",
+                "responses": {
+                    "200": {
+                        "description": "Current user data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "first_name": {
+                                            "type": "string",
+                                            "example": "John"
+                                        },
+                                        "last_name": {
+                                            "type": "string",
+                                            "example": "Doe"
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "example": "john.doe@example.com"
+                                        },
+                                        "is_admin": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "John Doe"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/forgot-password": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Request password reset",
+                "description": "Send password reset link to user's email",
+                "operationId": "a170cc694fe243a798c6038c995d26b4",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john.doe@example.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Reset link sent",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Reset link sent."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Unable to send reset link",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unable to send reset link."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cart": {
+            "get": {
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "View shopping cart",
+                "description": "Get cart items with automatic bundle detection and savings calculation",
+                "operationId": "0652f94dde92e36bbb3c461356ce1d7b",
+                "responses": {
+                    "200": {
+                        "description": "Cart contents",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "product": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer"
+                                                            },
+                                                            "title": {
+                                                                "type": "string"
+                                                            },
+                                                            "price": {
+                                                                "type": "number"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "quantity": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "subtotal": {
+                                            "description": "Total price (with bundle discount applied if eligible)",
+                                            "type": "number",
+                                            "example": 24.99
+                                        },
+                                        "bundle": {
+                                            "description": "Bundle applied (if cart items match a bundle)",
+                                            "type": "object",
+                                            "nullable": true
+                                        },
+                                        "bundle_savings": {
+                                            "description": "Amount saved with bundle discount",
+                                            "type": "number",
+                                            "example": 7.98
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "Clear cart",
+                "description": "Remove all items from shopping cart",
+                "operationId": "c11937b9c6a767730b1dc083d3d13e96",
+                "responses": {
+                    "200": {
+                        "description": "Cart cleared",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Cart cleared."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/cart/add": {
+            "post": {
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "Add product to cart",
+                "description": "Add a product to shopping cart (prevents adding already purchased products)",
+                "operationId": "8a051e160148a408fe92e1f8da586aab",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "product_id"
+                                ],
+                                "properties": {
+                                    "product_id": {
+                                        "description": "Product ID to add",
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Product added to cart",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Added to cart."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "409": {
+                        "description": "Product already purchased",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Already purchased."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/cart/{product_id}": {
+            "delete": {
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "Remove product from cart",
+                "description": "Remove a specific product from shopping cart",
+                "operationId": "16c3558b2c2aa39ed24b6e1c4a607c80",
+                "parameters": [
+                    {
+                        "name": "product_id",
+                        "in": "path",
+                        "description": "Product ID to remove",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Product removed from cart",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Removed from cart."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/cart/bundle/{bundle_id}": {
+            "post": {
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "Add bundle to cart",
+                "description": "Add all products from a bundle to cart (skips already purchased products)",
+                "operationId": "24dffeedabf5b4780aed45323be36f8b",
+                "parameters": [
+                    {
+                        "name": "bundle_id",
+                        "in": "path",
+                        "description": "Bundle ID to add",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Bundle added to cart",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Bundle added to cart."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Bundle not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/products/{product_id}/comments": {
+            "get": {
+                "tags": [
+                    "Comments"
+                ],
+                "summary": "Get product comments",
+                "description": "Get paginated list of approved comments for a product (Q&A style)",
+                "operationId": "d3d7e0bdd20b4eb5c33b814d89663ed9",
+                "parameters": [
+                    {
+                        "name": "product_id",
+                        "in": "path",
+                        "description": "Product ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated comments",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "body": {
+                                                        "type": "string",
+                                                        "example": "Great product! Very helpful for my business."
+                                                    },
+                                                    "user": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer"
+                                                            },
+                                                            "first_name": {
+                                                                "type": "string",
+                                                                "example": "John"
+                                                            },
+                                                            "last_name": {
+                                                                "type": "string",
+                                                                "example": "Doe"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "current_page": {
+                                            "type": "integer"
+                                        },
+                                        "last_page": {
+                                            "type": "integer"
+                                        },
+                                        "per_page": {
+                                            "type": "integer",
+                                            "example": 20
+                                        },
+                                        "total": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Comments"
+                ],
+                "summary": "Post a comment on product",
+                "description": "Add a comment/question to a product. Comment will be automatically approved (requires authentication).",
+                "operationId": "81568b7e4c660cd0eee7ef7fc2c7fec1",
+                "parameters": [
+                    {
+                        "name": "product_id",
+                        "in": "path",
+                        "description": "Product ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "body"
+                                ],
+                                "properties": {
+                                    "body": {
+                                        "description": "Comment text (max 2000 characters)",
+                                        "type": "string",
+                                        "maxLength": 2000,
+                                        "example": "This looks great! Can I use this template for my consulting business?"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Comment posted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "body": {
+                                            "type": "string"
+                                        },
+                                        "is_approved": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer"
+                                                },
+                                                "first_name": {
+                                                    "type": "string"
+                                                },
+                                                "last_name": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Product not found"
+                    },
+                    "422": {
+                        "description": "Validation error (body required, max 2000 chars)"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/contact": {
+            "post": {
+                "tags": [
+                    "Contact"
+                ],
+                "summary": "Submit contact form",
+                "description": "Send a contact message. Optionally subscribe to newsletter (default: true). Rate limited to 5 requests per minute.",
+                "operationId": "4d33e9ce28a28bf1184927750df24ba8",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "first_name",
+                                    "last_name",
+                                    "email",
+                                    "message"
+                                ],
+                                "properties": {
+                                    "first_name": {
+                                        "description": "Sender's first name",
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "John"
+                                    },
+                                    "last_name": {
+                                        "description": "Sender's last name",
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "Doe"
+                                    },
+                                    "email": {
+                                        "description": "Sender's email address",
+                                        "type": "string",
+                                        "format": "email",
+                                        "maxLength": 255,
+                                        "example": "john.doe@example.com"
+                                    },
+                                    "message": {
+                                        "description": "Contact message (max 5000 characters)",
+                                        "type": "string",
+                                        "maxLength": 5000,
+                                        "example": "I'm interested in your business templates. Can you tell me more about customization options?"
+                                    },
+                                    "subscribe_newsletter": {
+                                        "description": "Subscribe to newsletter (default: true)",
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Message sent successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Thank you! We'll be in touch soon."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too many requests (rate limit exceeded: 5 per minute)"
+                    }
+                }
+            }
+        },
+        "/api/checkout": {
+            "post": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Create Stripe checkout session",
+                "description": "Create a Stripe checkout session for cart items. Automatically detects and applies bundle discounts. For free orders (total = 0), completes immediately. For paid orders, returns Stripe checkout URL for redirect.",
+                "operationId": "9ffdb778be6dc285001105aeb7737bcf",
+                "responses": {
+                    "200": {
+                        "description": "Checkout response - either immediate completion (free) or Stripe checkout URL (paid)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "oneOf": [
+                                        {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Order completed!"
+                                                },
+                                                "order_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        {
+                                            "properties": {
+                                                "checkout_url": {
+                                                    "type": "string",
+                                                    "example": "https://checkout.stripe.com/c/pay/cs_test_xxxxxxxxxxxxx"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Cart is empty",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Cart is empty."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "500": {
+                        "description": "Payment processing error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Payment error."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/payment/success": {
+            "get": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Verify successful payment",
+                "description": "Callback endpoint after successful Stripe checkout. Verifies payment and marks order as completed.",
+                "operationId": "316a026cd7be78c056c5a0e6738cb30a",
+                "parameters": [
+                    {
+                        "name": "session_id",
+                        "in": "query",
+                        "description": "Stripe checkout session ID (provided by Stripe redirect)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "cs_test_xxxxxxxxxxxxx"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Payment verified successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Payment successful!"
+                                        },
+                                        "order": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "total": {
+                                                    "type": "number",
+                                                    "example": 24.99
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "completed"
+                                                },
+                                                "items": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "product": {
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "integer"
+                                                                    },
+                                                                    "title": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "slug": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "price": {
+                                                                "type": "number"
+                                                            },
+                                                            "quantity": {
+                                                                "type": "integer"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Missing session_id parameter",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Missing session."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "500": {
+                        "description": "Payment verification failed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Verification issue."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/webhook/stripe": {
+            "post": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Stripe webhook handler",
+                "description": "Receives webhook events from Stripe (checkout.session.completed, payment_intent.succeeded, payment_intent.payment_failed). Verifies signature and processes payment events. This endpoint is called by Stripe servers, not by client applications.",
+                "operationId": "6ae6a4e69e580e7e6eb07fbca596ad03",
+                "parameters": [
+                    {
+                        "name": "Stripe-Signature",
+                        "in": "header",
+                        "description": "Stripe webhook signature for verification (automatically sent by Stripe)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "t=1234567890,v1=xxxxxxxxxxxxx"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Stripe webhook event payload (JSON)",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "type": "string",
+                                        "example": "evt_xxxxxxxxxxxxx"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "example": "checkout.session.completed"
+                                    },
+                                    "data": {
+                                        "properties": {
+                                            "object": {
+                                                "description": "Event-specific data",
+                                                "type": "object"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Webhook processed successfully",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": "OK"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Webhook processing failed (invalid signature or processing error)",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": "Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/products": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "List all products",
+                "description": "Get paginated list of products with optional filtering by category and search",
+                "operationId": "1bfaa78d1c2c3848ab8165c5dadcad3e",
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "description": "Filter by category slug",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "templates"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search in title and description",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "business"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number for pagination",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated products list",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "title": {
+                                                        "type": "string",
+                                                        "example": "Small Business Launch Checklist"
+                                                    },
+                                                    "slug": {
+                                                        "type": "string",
+                                                        "example": "small-business-launch-checklist"
+                                                    },
+                                                    "short_description": {
+                                                        "type": "string"
+                                                    },
+                                                    "price": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 7.99
+                                                    },
+                                                    "is_featured": {
+                                                        "type": "boolean",
+                                                        "example": true
+                                                    },
+                                                    "file_type": {
+                                                        "type": "string",
+                                                        "example": "pdf"
+                                                    },
+                                                    "category": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer"
+                                                            },
+                                                            "name": {
+                                                                "type": "string"
+                                                            },
+                                                            "slug": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "current_page": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "last_page": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "per_page": {
+                                            "type": "integer",
+                                            "example": 12
+                                        },
+                                        "total": {
+                                            "type": "integer",
+                                            "example": 3
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/products/{slug}": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Get product details",
+                "description": "Get detailed product information including comments and related products",
+                "operationId": "2eb94cf22f00aa181040441a8ae7b07e",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "description": "Product slug",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "small-business-launch-checklist"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Product details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "product": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer"
+                                                },
+                                                "title": {
+                                                    "type": "string"
+                                                },
+                                                "slug": {
+                                                    "type": "string"
+                                                },
+                                                "description": {
+                                                    "type": "string"
+                                                },
+                                                "price": {
+                                                    "type": "number"
+                                                },
+                                                "file_type": {
+                                                    "type": "string"
+                                                },
+                                                "file_size": {
+                                                    "type": "integer"
+                                                },
+                                                "category": {
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "has_purchased": {
+                                            "description": "Whether current user has purchased this product",
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "comments": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "related": {
+                                            "description": "Related products from same category",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Product not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/featured": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Get featured products and bundles",
+                "description": "Get featured products and active bundle deals",
+                "operationId": "bacc6d05f5480832029d0dc29b1b257c",
+                "responses": {
+                    "200": {
+                        "description": "Featured products and bundles",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "products": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "title": {
+                                                        "type": "string"
+                                                    },
+                                                    "slug": {
+                                                        "type": "string"
+                                                    },
+                                                    "price": {
+                                                        "type": "number"
+                                                    },
+                                                    "is_featured": {
+                                                        "type": "boolean",
+                                                        "example": true
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "bundles": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "title": {
+                                                        "type": "string",
+                                                        "example": "Complete Business Starter Pack"
+                                                    },
+                                                    "slug": {
+                                                        "type": "string"
+                                                    },
+                                                    "price": {
+                                                        "type": "number",
+                                                        "example": 24.99
+                                                    },
+                                                    "original_price": {
+                                                        "type": "number",
+                                                        "example": 32.97
+                                                    },
+                                                    "products": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "object"
+                                                        }
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/categories": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Get all categories",
+                "description": "Get list of all active product categories",
+                "operationId": "3f00f2f5b0bf5b4cae21333006262d96",
+                "responses": {
+                    "200": {
+                        "description": "List of categories",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Templates"
+                                            },
+                                            "slug": {
+                                                "type": "string",
+                                                "example": "templates"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/products/{id}/download": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Download purchased product",
+                "description": "Download product file (requires purchase verification)",
+                "operationId": "0350b2c29891b5ff5b23b7c8cd500052",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Product ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "File download",
+                        "content": {
+                            "application/octet-stream": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Purchase required",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Purchase required."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/subscribe": {
+            "post": {
+                "tags": [
+                    "Newsletter"
+                ],
+                "summary": "Subscribe to newsletter",
+                "description": "Subscribe email to newsletter. Rate limited to 5 requests per minute. If email already exists, updates the subscription.",
+                "operationId": "afdc73dfe99f0af6f02ce5dbf422b37c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "description": "Email address to subscribe",
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john.doe@example.com"
+                                    },
+                                    "first_name": {
+                                        "description": "Optional first name",
+                                        "type": "string",
+                                        "example": "John"
+                                    },
+                                    "last_name": {
+                                        "description": "Optional last name",
+                                        "type": "string",
+                                        "example": "Doe"
+                                    },
+                                    "source": {
+                                        "description": "Subscription source (default: newsletter)",
+                                        "type": "string",
+                                        "example": "newsletter"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Subscribed successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Thank you for subscribing!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error (invalid email format)"
+                    },
+                    "429": {
+                        "description": "Too many requests (rate limit exceeded)"
+                    }
+                }
+            }
+        },
+        "/api/unsubscribe/{email}": {
+            "get": {
+                "tags": [
+                    "Newsletter"
+                ],
+                "summary": "Unsubscribe from newsletter",
+                "description": "Unsubscribe an email address from newsletter (marks as unsubscribed with timestamp)",
+                "operationId": "45f65efad7c28fd6db6a180bc2f17db2",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "path",
+                        "description": "Email address to unsubscribe",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "email",
+                            "example": "john.doe@example.com"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Unsubscribed successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You have been unsubscribed."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "description": "Enter token in format: Bearer {token}"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Authentication",
+            "description": "User authentication endpoints (register, login, logout, password reset)"
+        },
+        {
+            "name": "Products",
+            "description": "Browse and manage digital products"
+        },
+        {
+            "name": "Cart",
+            "description": "Shopping cart management"
+        },
+        {
+            "name": "Payments",
+            "description": "Stripe checkout and payment processing"
+        },
+        {
+            "name": "Comments",
+            "description": "Product reviews and Q&A"
+        },
+        {
+            "name": "Newsletter",
+            "description": "Email subscription management"
+        },
+        {
+            "name": "Contact",
+            "description": "Contact form submissions"
+        },
+        {
+            "name": "Admin - Products",
+            "description": "Admin endpoints for product management"
+        },
+        {
+            "name": "Admin - Orders",
+            "description": "Admin endpoints for order management"
+        },
+        {
+            "name": "Admin - Subscribers",
+            "description": "Admin endpoints for newsletter subscriber management"
+        },
+        {
+            "name": "Admin - Comments",
+            "description": "Admin endpoints for comment moderation"
+        },
+        {
+            "name": "Admin - Messages",
+            "description": "Admin endpoints for contact message management"
+        },
+        {
+            "name": "Admin - Dashboard",
+            "description": "Admin - Dashboard"
+        }
+    ]
+}

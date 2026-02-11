@@ -17,21 +17,21 @@ class CommentFactory extends Factory
             'user_id' => User::factory(),
             'product_id' => Product::factory(),
             'body' => fake()->paragraph(),
-            'is_approved' => fake()->boolean(70),
+            'status' => fake()->randomElement(['draft', 'published']),
         ];
     }
 
     public function approved(): static
     {
         return $this->state(fn (array $attributes) => [
-            'is_approved' => true,
+            'status' => 'published',
         ]);
     }
 
     public function pending(): static
     {
         return $this->state(fn (array $attributes) => [
-            'is_approved' => false,
+            'status' => 'draft',
         ]);
     }
 }

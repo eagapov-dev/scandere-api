@@ -11,7 +11,7 @@ class Product extends Model
     use HasFactory;
     protected $fillable = [
         'category_id', 'title', 'slug', 'short_description', 'description',
-        'price', 'is_free', 'is_active', 'is_featured', 'file_path', 'file_name',
+        'price', 'is_free', 'is_active', 'show_on_homepage', 'file_path', 'file_name',
         'file_size', 'file_type', 'preview_image', 'download_count', 'sort_order',
     ];
 
@@ -21,7 +21,7 @@ class Product extends Model
             'price' => 'decimal:2',
             'is_free' => 'boolean',
             'is_active' => 'boolean',
-            'is_featured' => 'boolean',
+            'show_on_homepage' => 'boolean',
         ];
     }
 
@@ -39,7 +39,9 @@ class Product extends Model
     public function bundles() { return $this->belongsToMany(Bundle::class); }
 
     public function scopeActive($q) { return $q->where('is_active', true); }
-    public function scopeFeatured($q) { return $q->where('is_featured', true); }
+    public function scopeOnHomepage($q) { return $q->where('show_on_homepage', true); }
+    // Alias for backward compatibility
+    public function scopeFeatured($q) { return $q->where('show_on_homepage', true); }
 
     public function getFormattedPriceAttribute(): string
     {
