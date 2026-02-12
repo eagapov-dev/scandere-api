@@ -101,6 +101,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/messages/{message}/read', [AdminContact::class, 'markRead']);
         Route::post('/newsletter/send', [NewsletterCampaignController::class, 'send']);
         Route::get('/newsletter/stats', [NewsletterCampaignController::class, 'stats']);
+        Route::get('/users', [\App\Http\Controllers\Admin\UserController::class, 'index']);
+        Route::patch('/users/{user}/admin-status', [\App\Http\Controllers\Admin\UserController::class, 'updateAdminStatus']);
+        Route::delete('/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy']);
     });
 });
 
