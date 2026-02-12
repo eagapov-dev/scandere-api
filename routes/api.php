@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\{ProductController, CartController, PaymentController, CommentController, ContactController, SubscriberController, FaqController, HomeController};
 use App\Http\Controllers\Admin\{DashboardController as AdminDash, ProductController as AdminProduct, SubscriberController as AdminSub, OrderController as AdminOrder, CommentController as AdminComment, ContactController as AdminContact, CategoryController as AdminCategory, FaqController as AdminFaq, FaqCategoryController as AdminFaqCategory, HeroSlideController, HomeFeatureController, HomeStatController, HomeShowcaseController, SocialLinkController, NavigationLinkController, NewsletterCampaignController};
 use Illuminate\Support\Facades\Route;
@@ -34,9 +35,16 @@ Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword']);
 
+// Email verification (public route - no auth required)
+Route::post('/auth/email/verify', [EmailVerificationController::class, 'verify']);
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/user', [AuthController::class, 'user']);
+
+    // Email verification (authenticated routes)
+    Route::post('/auth/email/resend', [EmailVerificationController::class, 'resend']);
+    Route::get('/auth/email/verification-status', [EmailVerificationController::class, 'status']);
 
     // Dashboard
     Route::get('/dashboard', function () {

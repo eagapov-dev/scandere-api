@@ -65,8 +65,8 @@ class AuthController extends Controller
 
         $user = User::create([...$v, 'password' => Hash::make($v['password'])]);
 
-        // Send welcome email
-        $user->notify(new \App\Notifications\WelcomeUser());
+        // Send email verification
+        $user->notify(new \App\Notifications\VerifyEmail());
 
         $token = $user->createToken('auth')->plainTextToken;
 
