@@ -247,4 +247,36 @@ class AuthController extends Controller
             $status === Password::RESET_LINK_SENT ? 200 : 400
         );
     }
+
+    /**
+     * Reset password using token from email
+     */
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => ['required', 'confirmed', PasswordRule::min(8)->mixedCase()->numbers()],
+        ]);
+
+        // Use Laravel's Password facade to validate token and reset password
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function (User $user, string $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password)
+                ])->save();
+
+                // Revoke all existing tokens for security
+                $user->tokens()->delete();
+            }
+        );
+
+        return response()->json(
+            ['message' => $status === Password::PASSWORD_RESET
+                ? 'Password reset successfully.'
+                : 'Invalid or expired reset token.'],
+            $status === Password::PASSWORD_RESET ? 200 : 400
+        );
+    }
 }

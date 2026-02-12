@@ -34,6 +34,7 @@ Route::get('/recent-qa', [CommentController::class, 'recentQA']);
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('/auth/reset-password', [AuthController::class, 'resetPassword']);
 
 // Email verification (public route - no auth required)
 Route::post('/auth/email/verify', [EmailVerificationController::class, 'verify']);
