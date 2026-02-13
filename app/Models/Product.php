@@ -13,6 +13,7 @@ class Product extends Model
         'category_id', 'title', 'slug', 'short_description', 'description',
         'price', 'is_free', 'is_active', 'show_on_homepage', 'file_path', 'file_name',
         'file_size', 'file_type', 'preview_image', 'download_count', 'sort_order',
+        'meta_title', 'meta_description', 'meta_keywords', 'og_title', 'og_description', 'og_image',
     ];
 
     protected function casts(): array

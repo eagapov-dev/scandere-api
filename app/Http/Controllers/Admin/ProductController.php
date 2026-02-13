@@ -91,6 +91,12 @@ class ProductController extends Controller
             'show_on_homepage' => 'boolean',
             'file' => 'required|file|max:51200',
             'preview_image' => 'nullable|image|max:2048',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string|max:500',
+            'meta_keywords' => 'nullable|string|max:255',
+            'og_title' => 'nullable|string|max:255',
+            'og_description' => 'nullable|string|max:500',
+            'og_image' => 'nullable|string|max:255',
         ]);
 
         $fileData = $this->fileService->storeProduct($request->file('file'));
@@ -181,6 +187,13 @@ class ProductController extends Controller
             'is_active' => 'boolean',
             'show_on_homepage' => 'boolean',
             'file' => 'nullable|file|max:51200',
+            'preview_image' => 'nullable|image|max:2048',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string|max:500',
+            'meta_keywords' => 'nullable|string|max:255',
+            'og_title' => 'nullable|string|max:255',
+            'og_description' => 'nullable|string|max:500',
+            'og_image' => 'nullable|string|max:255',
         ]);
 
         $data = [...$v, 'is_free' => $request->boolean('is_free'), 'is_active' => $request->boolean('is_active', true), 'show_on_homepage' => $request->boolean('show_on_homepage')];
@@ -188,6 +201,10 @@ class ProductController extends Controller
         if ($request->hasFile('file')) {
             $this->fileService->deleteProduct($product);
             $data = array_merge($data, $this->fileService->storeProduct($request->file('file')));
+        }
+
+        if ($request->hasFile('preview_image')) {
+            $data['preview_image'] = $request->file('preview_image')->store('public/previews');
         }
 
         $product->update($data);
