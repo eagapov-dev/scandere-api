@@ -3,7 +3,7 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\{ProductController, CartController, PaymentController, CommentController, ContactController, SubscriberController, FaqController, HomeController};
-use App\Http\Controllers\Admin\{DashboardController as AdminDash, ProductController as AdminProduct, SubscriberController as AdminSub, OrderController as AdminOrder, CommentController as AdminComment, ContactController as AdminContact, CategoryController as AdminCategory, FaqController as AdminFaq, FaqCategoryController as AdminFaqCategory, HeroSlideController, HomeFeatureController, HomeStatController, HomeShowcaseController, SocialLinkController, NavigationLinkController, NewsletterCampaignController};
+use App\Http\Controllers\Admin\{DashboardController as AdminDash, ProductController as AdminProduct, SubscriberController as AdminSub, OrderController as AdminOrder, CommentController as AdminComment, ContactController as AdminContact, CategoryController as AdminCategory, FaqController as AdminFaq, FaqCategoryController as AdminFaqCategory, HeroSlideController, HomeFeatureController, HomeStatController, HomeShowcaseController, SocialLinkController, NavigationLinkController, NewsletterCampaignController, PageController as AdminPage};
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,6 +21,7 @@ Route::get('/featured', [ProductController::class, 'featured']);
 Route::get('/categories', [ProductController::class, 'categories']);
 Route::get('/faqs', [FaqController::class, 'index']);
 Route::get('/home-content', [HomeController::class, 'content']);
+Route::get('/pages/{slug}', [\App\Http\Controllers\PageController::class, 'show']);
 
 // Public comments (read only)
 Route::get('/products/{product}/comments', [CommentController::class, 'index']);
@@ -91,6 +92,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('home-showcases', HomeShowcaseController::class);
         Route::apiResource('social-links', SocialLinkController::class);
         Route::apiResource('navigation-links', NavigationLinkController::class);
+        Route::apiResource('pages', AdminPage::class);
         Route::get('/subscribers', [AdminSub::class, 'index']);
         Route::get('/subscribers/export', [AdminSub::class, 'export']);
         Route::get('/orders', [AdminOrder::class, 'index']);
